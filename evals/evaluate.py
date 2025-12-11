@@ -36,6 +36,7 @@ CITATION_REGEX = re.compile(
 )
 
 
+
 class AnyCitationMetric(BaseMetric):
     METRIC_NAME = "any_citation"
 
