@@ -89,6 +89,7 @@ class ChatReadRetrieveReadApproach(Approach):
         self.query_rewrite_prompt = self.prompt_manager.load_prompt("chat_query_rewrite.prompty")
         self.query_rewrite_tools = self.prompt_manager.load_tools("chat_query_rewrite_tools.json")
         self.answer_prompt = self.prompt_manager.load_prompt("chat_answer_question.prompty")
+        self.validation_prompt = self.prompt_manager.load_prompt("validate_answer.prompty")
         self.reasoning_effort = reasoning_effort
         self.include_token_usage = True
         self.multimodal_enabled = multimodal_enabled
@@ -125,6 +126,19 @@ class ChatReadRetrieveReadApproach(Approach):
         chat_completion_response: ChatCompletion = await cast(Awaitable[ChatCompletion], chat_coroutine)
         content = chat_completion_response.choices[0].message.content
         role = chat_completion_response.choices[0].message.role
+        
+        # Validate answer if enabled
+        if overrides.get("validate_answer"):
+            q = messages[-1]["content"]
+            if isinstance(q, str):
+                content, validation_thought = await self.validate_answer(
+                    user_query=q,
+                    generated_answer=content or "",
+                    sources=extra_info.data_points.text or [],
+                    overrides=overrides,
+                )
+                extra_info.thoughts.append(validation_thought)
+        
         if overrides.get("suggest_followup_questions"):
             content, followup_questions = self.extract_followup_questions(content)
             extra_info.followup_questions = followup_questions

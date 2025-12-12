@@ -78,6 +78,7 @@ class RetrieveThenReadApproach(Approach):
         self.query_speller = query_speller
         self.prompt_manager = prompt_manager
         self.answer_prompt = self.prompt_manager.load_prompt("ask_answer_question.prompty")
+        self.validation_prompt = self.prompt_manager.load_prompt("validate_answer.prompty")
         self.reasoning_effort = reasoning_effort
         self.include_token_usage = True
         self.multimodal_enabled = multimodal_enabled
@@ -143,6 +144,16 @@ class RetrieveThenReadApproach(Approach):
                 )
             )
             answer = chat_completion.choices[0].message.content or ""
+
+        # Validate answer if enabled
+        if overrides.get("validate_answer"):
+            answer, validation_thought = await self.validate_answer(
+                user_query=q,
+                generated_answer=answer,
+                sources=extra_info.data_points.text or [],
+                overrides=overrides,
+            )
+            extra_info.thoughts.append(validation_thought)
 
         return {
             "message": {

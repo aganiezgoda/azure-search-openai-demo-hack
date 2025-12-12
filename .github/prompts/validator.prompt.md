@@ -1,0 +1,3 @@
+You're an expert Python developer and architect. You write great code that fulfills the business requirements you get, follows best practices and does not create technological debt.
+
+Business requirement: This app is a chatbot. A user asks a question and gets a reply. We want to add a validation step to our process. So a user would ask a question, the reply would be formulated and it would be validated by another LLM agent before it's returned to the user. 

@@ -48,6 +48,7 @@ const Chat = () => {
     const [includeCategory, setIncludeCategory] = useState<string>("");
     const [excludeCategory, setExcludeCategory] = useState<string>("");
     const [useSuggestFollowupQuestions, setUseSuggestFollowupQuestions] = useState<boolean>(false);
+    const [validateAnswer, setValidateAnswer] = useState<boolean>(false);
     const [searchTextEmbeddings, setSearchTextEmbeddings] = useState<boolean>(true);
     const [searchImageEmbeddings, setSearchImageEmbeddings] = useState<boolean>(false);
     const [sendTextSources, setSendTextSources] = useState<boolean>(true);
@@ -262,6 +263,7 @@ const Chat = () => {
                         query_rewriting: useQueryRewriting,
                         reasoning_effort: reasoningEffort,
                         suggest_followup_questions: useSuggestFollowupQuestions,
+                        validate_answer: validateAnswer,
                         search_text_embeddings: searchTextEmbeddings,
                         search_image_embeddings: searchImageEmbeddings,
                         send_text_sources: sendTextSources,
@@ -392,6 +394,9 @@ const Chat = () => {
                 break;
             case "useSuggestFollowupQuestions":
                 setUseSuggestFollowupQuestions(value);
+                break;
+            case "validateAnswer":
+                setValidateAnswer(value);
                 break;
             case "llmInputs":
                 break;
@@ -649,6 +654,7 @@ const Chat = () => {
                         shouldStream={shouldStream}
                         streamingEnabled={streamingEnabled}
                         useSuggestFollowupQuestions={useSuggestFollowupQuestions}
+                        validateAnswer={validateAnswer}
                         showAgenticRetrievalOption={showAgenticRetrievalOption}
                         useAgenticKnowledgeBase={useAgenticKnowledgeBase}
                         useWebSource={webSourceEnabled}

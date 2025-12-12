@@ -247,6 +247,9 @@ def mock_openai_chatcompletion(monkeypatch):
             answer = "westbrae nursery logo"
         elif isinstance(last_question, list) and any([part.get("image_url") for part in last_question]):
             answer = "From the provided sources, the impact of interest rates and GDP growth on financial markets can be observed through the line graph. [Financial Market Analysis Report 2023-7.png]"
+        elif messages and len(messages) > 0 and "**Validation:**" in str(messages[-1].get("content", "")):
+            # This is a validation request - return JSON validation response
+            answer = '{"is_valid": true, "issues": [], "corrected_answer": null, "confidence": "high"}'
         else:
             answer = "The capital of France is Paris. [Benefit_Options-2.pdf]."
             # Check if system prompt asks for followup questions

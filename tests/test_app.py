@@ -785,6 +785,29 @@ async def test_ask_prompt_template_concat(client, snapshot):
 
 
 @pytest.mark.asyncio
+async def test_ask_with_validation(client, snapshot):
+    response = await client.post(
+        "/ask",
+        json={
+            "messages": [{"content": "What is the capital of France?", "role": "user"}],
+            "context": {
+                "overrides": {"retrieval_mode": "text", "validate_answer": True},
+            },
+        },
+    )
+    assert response.status_code == 200
+    result = await response.get_json()
+    citation_details = pop_citation_activity_details(result)
+    assert citation_details is None
+    # Check that validation thought step was added
+    thoughts = result["context"]["thoughts"]
+    validation_thought = next((t for t in thoughts if t["title"] == "Answer Validation"), None)
+    assert validation_thought is not None
+    assert validation_thought["props"]["validation"]["is_valid"] is True
+    snapshot.assert_match(json.dumps(result, indent=4), "result.json")
+
+
+@pytest.mark.asyncio
 async def test_chat_seed(client, snapshot):
     response = await client.post(
         "/chat",
@@ -840,6 +863,27 @@ async def test_chat_hybrid_semantic_ranker(client, snapshot):
     assert result["context"]["thoughts"][1]["props"]["use_vector_search"] is True
     assert result["context"]["thoughts"][1]["props"]["use_semantic_ranker"] is True
     assert result["context"]["thoughts"][1]["props"]["use_semantic_captions"] is False
+    snapshot.assert_match(json.dumps(result, indent=4), "result.json")
+
+
+@pytest.mark.asyncio
+async def test_chat_with_validation(client, snapshot):
+    response = await client.post(
+        "/chat",
+        json={
+            "messages": [{"content": "What is the capital of France?", "role": "user"}],
+            "context": {
+                "overrides": {"retrieval_mode": "text", "validate_answer": True},
+            },
+        },
+    )
+    assert response.status_code == 200
+    result = await response.get_json()
+    # Check that validation thought step was added
+    thoughts = result["context"]["thoughts"]
+    validation_thought = next((t for t in thoughts if t["title"] == "Answer Validation"), None)
+    assert validation_thought is not None
+    assert validation_thought["props"]["validation"]["is_valid"] is True
     snapshot.assert_match(json.dumps(result, indent=4), "result.json")
 
 

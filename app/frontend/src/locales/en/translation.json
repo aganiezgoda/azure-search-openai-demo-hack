@@ -105,6 +105,7 @@
             "high": "High"
         },
         "useSuggestFollowupQuestions": "Suggest follow-up questions",
+        "validateAnswer": "Validate answers with LLM",
         "useAgenticKnowledgeBase": "Use agentic retrieval",
         "useWebSource": "Include web source",
         "useSharePointSource": "Include Sharepoint source",
@@ -161,6 +162,7 @@
         "useSemanticCaptions":
              "Sends semantic captions to the LLM instead of the full search result. A semantic caption is extracted from a search result during the process of semantic ranking.",
         "suggestFollowupQuestions": "Asks the LLM to suggest follow-up questions based on the user's query.",
+        "validateAnswer": "Validates generated answers using a separate LLM call to check factual accuracy, completeness, and source attribution before returning to the user.",
         "textEmbeddings": "When selected, search will use embeddings from the text-only embeddings model of extracted text chunks.",
         "imageEmbeddings": "When selected, search will use embeddings from the multimodal embeddings model of extracted images.",
         "llmTextInputs": "When selected, text content from the search results will be sent to the LLM as context.",

@@ -50,6 +50,7 @@ export interface SettingsProps {
     showWebSourceOption?: boolean;
     useSharePointSource?: boolean;
     showSharePointSourceOption?: boolean;
+    validateAnswer?: boolean;
 }
 
 export const Settings = ({
@@ -92,7 +93,8 @@ export const Settings = ({
     useWebSource = false,
     showWebSourceOption = false,
     useSharePointSource = false,
-    showSharePointSourceOption = false
+    showSharePointSourceOption = false,
+    validateAnswer = false
 }: SettingsProps) => {
     const { t } = useTranslation();
 
@@ -131,6 +133,8 @@ export const Settings = ({
     const shouldStreamFieldId = useId("shouldStreamField");
     const suggestFollowupQuestionsId = useId("suggestFollowupQuestions");
     const suggestFollowupQuestionsFieldId = useId("suggestFollowupQuestionsField");
+    const validateAnswerId = useId("validateAnswer");
+    const validateAnswerFieldId = useId("validateAnswerField");
 
     const webSourceDisablesStreamingAndFollowup = !!useWebSource;
 
@@ -380,9 +384,20 @@ export const Settings = ({
                 </>
             )}
 
+            <h3 className={styles.sectionHeader}>{t("llmSettings")}</h3>
+
+            <Checkbox
+                id={validateAnswerFieldId}
+                className={styles.settingsSeparator}
+                checked={validateAnswer}
+                label={t("labels.validateAnswer")}
+                onChange={(_ev, checked) => onChange("validateAnswer", !!checked)}
+                aria-labelledby={validateAnswerId}
+                onRenderLabel={props => renderLabel(props, validateAnswerId, validateAnswerFieldId, t("helpTexts.validateAnswer"))}
+            />
+
             {!useWebSource && (
                 <>
-                    <h3 className={styles.sectionHeader}>{t("llmSettings")}</h3>
                     <TextField
                         id={promptTemplateFieldId}
                         className={styles.settingsSeparator}

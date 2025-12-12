@@ -30,6 +30,7 @@ export type ChatAppRequestOverrides = {
     use_agentic_knowledgebase: boolean;
     use_web_source?: boolean;
     use_sharepoint_source?: boolean;
+    validate_answer?: boolean;
 };
 
 export type ResponseMessage = {

@@ -37,6 +37,7 @@ export function Component(): JSX.Element {
     const [reasoningEffort, setReasoningEffort] = useState<string>("");
     const [sendTextSources, setSendTextSources] = useState<boolean>(true);
     const [sendImageSources, setSendImageSources] = useState<boolean>(false);
+    const [validateAnswer, setValidateAnswer] = useState<boolean>(false);
     const [includeCategory, setIncludeCategory] = useState<string>("");
 
     const [excludeCategory, setExcludeCategory] = useState<string>("");
@@ -166,6 +167,7 @@ export function Component(): JSX.Element {
                         semantic_captions: useSemanticCaptions,
                         query_rewriting: useQueryRewriting,
                         reasoning_effort: reasoningEffort,
+                        validate_answer: validateAnswer,
                         search_text_embeddings: searchTextEmbeddings,
                         search_image_embeddings: searchImageEmbeddings,
                         send_text_sources: sendTextSources,
@@ -248,6 +250,9 @@ export function Component(): JSX.Element {
                 break;
             case "sendImageSources":
                 setSendImageSources(value);
+                break;
+            case "validateAnswer":
+                setValidateAnswer(value);
                 break;
             case "searchTextEmbeddings":
                 setSearchTextEmbeddings(value);
@@ -406,6 +411,7 @@ export function Component(): JSX.Element {
                     requireAccessControl={requireAccessControl}
                     showAgenticRetrievalOption={showAgenticRetrievalOption}
                     useAgenticKnowledgeBase={useAgenticKnowledgeBase}
+                    validateAnswer={validateAnswer}
                     useWebSource={webSourceEnabled}
                     showWebSourceOption={webSourceSupported}
                     useSharePointSource={sharePointSourceEnabled}
