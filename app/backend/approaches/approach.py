@@ -73,6 +73,7 @@ class Document:
     reranker_score: Optional[float] = None
     activity: Optional[ActivityDetail] = None
     images: Optional[list[dict[str, Any]]] = None
+    priority: Optional[int] = None
 
     def serialize_for_results(self) -> dict[str, Any]:
         result_dict = {
@@ -98,6 +99,7 @@ class Document:
             ),
             "score": self.score,
             "reranker_score": self.reranker_score,
+            "priority": self.priority,
             "activity": asdict(self.activity) if self.activity else None,
             "images": self.images,
         }
@@ -350,6 +352,7 @@ class Approach(ABC):
                         score=document.get("@search.score"),
                         reranker_score=document.get("@search.reranker_score"),
                         images=document.get("images"),
+                        priority=document.get("priority"),
                     )
                 )
 
@@ -361,6 +364,15 @@ class Approach(ABC):
                     and (doc.reranker_score or 0) >= (minimum_reranker_score or 0)
                 )
             ]
+
+            # Sort by priority (lower number = higher priority), then by reranker score, then by regular score
+            qualified_documents.sort(
+                key=lambda doc: (
+                    doc.priority if doc.priority is not None else 999,  # Put None at the end
+                    -(doc.reranker_score or 0),
+                    -(doc.score or 0),
+                )
+            )
 
         return qualified_documents
 
@@ -770,7 +782,9 @@ class Approach(ABC):
                     cleaned = clean_source(" . ".join([cast(str, c.text) for c in doc.captions]))
                 else:
                     cleaned = clean_source(doc.content or "")
-                text_sources.append(f"{citation}: {cleaned}")
+                # Include priority marker if available
+                priority_marker = f" [Priority: {doc.priority}]" if doc.priority is not None else ""
+                text_sources.append(f"{citation}{priority_marker}: {cleaned}")
 
             if download_image_sources and hasattr(doc, "images") and doc.images:
                 for img in doc.images:
