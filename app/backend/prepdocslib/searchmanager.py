@@ -55,10 +55,11 @@ class Section:
     A section of a page that is stored in a search service. These sections are used as context by Azure OpenAI service
     """
 
-    def __init__(self, chunk: Chunk, content: File, category: Optional[str] = None):
+    def __init__(self, chunk: Chunk, content: File, category: Optional[str] = None, priority: Optional[int] = None):
         self.chunk = chunk  # content comes from here
         self.content = content  # sourcepage and sourcefile come from here
         self.category = category
+        self.priority = priority  # priority on a scale 1-3
         # this also needs images which will become the images field
 
 
@@ -274,6 +275,13 @@ class SearchManager:
                         type="Edm.String",
                         filterable=True,
                         facetable=False,
+                    ),
+                    SimpleField(
+                        name="priority",
+                        type="Edm.Int32",
+                        filterable=True,
+                        sortable=True,
+                        facetable=True,
                     ),
                 ]
                 if self.use_acls:
@@ -621,6 +629,7 @@ class SearchManager:
                             filename=section.content.filename(), page=section.chunk.page_num
                         ),
                         "sourcefile": section.content.filename(),
+                        "priority": section.priority,
                         **image_fields,
                         **section.content.acls,
                     }

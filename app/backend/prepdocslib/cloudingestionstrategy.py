@@ -128,6 +128,7 @@ class CloudIngestionStrategy(Strategy):  # pragma: no cover
             InputFieldMappingEntry(name="sourcefile", source="/document/chunks/*/sourcefile"),
             InputFieldMappingEntry(name=self.search_field_name_embedding, source="/document/chunks/*/embedding"),
             InputFieldMappingEntry(name="storageUrl", source="/document/metadata_storage_path"),
+            InputFieldMappingEntry(name="priority", source="/document/chunks/*/priority"),
         ]
         if self.use_multimodal:
             mappings.append(InputFieldMappingEntry(name="images", source="/document/chunks/*/images"))

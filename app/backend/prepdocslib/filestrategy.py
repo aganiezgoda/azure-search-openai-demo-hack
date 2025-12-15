@@ -26,6 +26,7 @@ async def parse_file(
     image_embeddings_client: Optional[ImageEmbeddings] = None,
     figure_processor: Optional[FigureProcessor] = None,
     user_oid: Optional[str] = None,
+    priority: Optional[int] = None,
 ) -> list[Section]:
 
     key = file.file_extension().lower()
@@ -46,7 +47,7 @@ async def parse_file(
                 figure_processor=figure_processor,
                 user_oid=user_oid,
             )
-    sections = process_text(pages, file, processor.splitter, category)
+    sections = process_text(pages, file, processor.splitter, category, priority)
     return sections
 
 
@@ -117,11 +118,14 @@ class FileStrategy(Strategy):
                 self.figure_processor.mark_content_understanding_ready()
 
     async def run(self):
+        import random
         self.setup_search_manager()
         if self.document_action == DocumentAction.Add:
             files = self.list_file_strategy.list()
             async for file in files:
                 try:
+                    # Generate random priority (1-3) for each document
+                    document_priority = random.randint(1, 3)
                     blob_url = await self.blob_manager.upload_blob(file)
                     sections = await parse_file(
                         file,
@@ -130,6 +134,7 @@ class FileStrategy(Strategy):
                         self.blob_manager,
                         self.image_embeddings,
                         figure_processor=self.figure_processor,
+                        priority=document_priority,
                     )
                     if sections:
                         await self.search_manager.update_content(sections, url=blob_url)
@@ -181,6 +186,9 @@ class UploadUserFileStrategy:
         self.search_field_name_embedding = search_field_name_embedding
 
     async def add_file(self, file: File, user_oid: str):
+        import random
+        # Generate random priority (1-3) for each document
+        document_priority = random.randint(1, 3)
         sections = await parse_file(
             file,
             self.file_processors,
@@ -189,6 +197,7 @@ class UploadUserFileStrategy:
             self.image_embeddings,
             figure_processor=self.figure_processor,
             user_oid=user_oid,
+            priority=document_priority,
         )
         if sections:
             await self.search_manager.update_content(sections, url=file.url)

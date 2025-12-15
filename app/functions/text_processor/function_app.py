@@ -180,6 +180,7 @@ async def process_document(data: dict[str, Any]) -> list[dict[str, Any]]:
     list[dict[str, Any]]
         Chunk dictionaries ready for downstream indexing.
     """
+    import random
 
     # Extract consolidated_document object from Shaper skill
     consolidated_doc = data.get("consolidated_document", data)
@@ -188,6 +189,9 @@ async def process_document(data: dict[str, Any]) -> list[dict[str, Any]]:
     storage_url = consolidated_doc.get("storageUrl") or consolidated_doc.get("metadata_storage_path") or file_name
     pages_input = consolidated_doc.get("pages", [])  # [{page_num, text, figure_ids}]
     figures_input = consolidated_doc.get("figures", [])  # serialized skill payload
+
+    # Generate random priority (1-3) for this document
+    document_priority = random.randint(1, 3)
 
     figures_by_id = {figure["figure_id"]: figure for figure in figures_input}
 
@@ -230,7 +234,7 @@ async def process_document(data: dict[str, Any]) -> list[dict[str, Any]]:
     file_processor = select_processor_for_filename(file_name, settings.file_processors)
     splitter = file_processor.splitter
 
-    sections = process_text(pages, file_wrapper, splitter, category=None)
+    sections = process_text(pages, file_wrapper, splitter, category=None, priority=document_priority)
     if not sections:
         return []
 
@@ -267,6 +271,7 @@ async def process_document(data: dict[str, Any]) -> list[dict[str, Any]]:
             "sourcepage": BlobManager.sourcepage_from_file_page(file_name, section.chunk.page_num),
             "sourcefile": file_name,
             "parent_id": storage_url,
+            "priority": section.priority,
             **({"images": image_refs} if image_refs else {}),
         }
 

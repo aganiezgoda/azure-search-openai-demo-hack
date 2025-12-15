@@ -29,6 +29,7 @@ def process_text(
     file: "File",
     splitter: "TextSplitter",
     category: str | None = None,
+    priority: int | None = None,
 ) -> list["Section"]:
     """Process document text and figures into searchable sections.
     Combines text with figure descriptions, splits into chunks, and
@@ -40,7 +41,7 @@ def process_text(
 
     # Step 2: Split combined text into chunks
     logger.info("Splitting '%s' into sections", file.filename())
-    sections = [Section(chunk, content=file, category=category) for chunk in splitter.split_pages(pages)]
+    sections = [Section(chunk, content=file, category=category, priority=priority) for chunk in splitter.split_pages(pages)]
 
     # Step 3: Add images back to each section based on page number
     for section in sections:
